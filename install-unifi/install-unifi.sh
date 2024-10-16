@@ -3,14 +3,15 @@
 # install-unifi.sh
 # Installs the Uni-Fi controller software on a FreeBSD machine (presumably running pfSense).
 
-# The latest version of UniFi:
-UNIFI_SOFTWARE_URL="https://dl.ui.com/unifi/7.2.97/UniFi.unix.zip"
+set -x
 
+# The latest version of UniFi:
+UNIFI_SOFTWARE_URL="https://dl.ui.com/unifi/6.5.55/UniFi.unix.zip"
 
 # The rc script associated with this branch or fork:
-RC_SCRIPT_URL="https://raw.githubusercontent.com/unofficial-unifi/unifi-pfsense/master/rc.d/unifi.sh"
+RC_SCRIPT_URL="https://raw.githubusercontent.com/sirstudly/unifi-pfsense/refs/heads/master/rc.d/unifi.sh"
 
-CURRENT_MONGODB_VERSION=mongodb42
+CURRENT_MONGODB_VERSION=mongodb44
 
 # If pkg-ng is not yet installed, bootstrap it:
 if ! /usr/sbin/pkg -N 2> /dev/null; then
@@ -29,7 +30,7 @@ fi
 ABI=`/usr/sbin/pkg config abi`
 
 # FreeBSD package source:
-FREEBSD_PACKAGE_URL="https://pkg.freebsd.org/${ABI}/latest/"
+FREEBSD_PACKAGE_URL="https://pkg.freebsd.org/${ABI}/release_0/"
 
 # FreeBSD package list:
 FREEBSD_PACKAGE_LIST_URL="${FREEBSD_PACKAGE_URL}packagesite.pkg"
@@ -112,6 +113,8 @@ AddPkg () {
   pkgvers=`echo $pkginfo | pcregrep -o1 '"version":"(.*?)"' | head -1`
   pkgurl="${FREEBSD_PACKAGE_URL}`echo $pkginfo | pcregrep -o1 '"path":"(.*?)"' | head -1`"
 
+  echo "pkgurl=$pkgurl, pkgvers=$pkgvers, pkginfo=$pkginfo, pkgname=$pkgname"
+
   # compare version for update/install
   if [ `pkg info | grep -c $pkgname-$pkgvers` -eq 1 ]; then
     echo "Package $pkgname-$pkgvers already installed."
@@ -134,7 +137,7 @@ AddPkg freetype2
 AddPkg fontconfig
 AddPkg alsa-lib
 AddPkg mpdecimal
-AddPkg python37
+AddPkg python39
 AddPkg libfontenc
 AddPkg mkfontscale
 AddPkg dejavu
